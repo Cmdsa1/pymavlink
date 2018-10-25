@@ -139,16 +139,9 @@ def mavgen(opts, args):
     if not opts.with_wip:
         # Strip out the wip topics
         for x in xml:
-            msgs=x.message
-            for message in msgs:
-                if message.wip:
-                    msgs.remove(message)
-            enums = x.enum
-            for enum in enums:
-                for enumvalue in enum.entry:
-                    if enumvalue.wip:
-                        enum.entry.remove(enumvalue)
-
+            x.message = [message for message in x.message if not message.wip]
+            for enum in x.enum:
+                enum.entry = [enumvalue for enumvalue in enum.entry if not enumvalue.wip]
 
     print("Found %u MAVLink message types in %u XML files" % (
         mavparse.total_msgs(xml), len(xml)))
