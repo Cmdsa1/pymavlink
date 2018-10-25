@@ -26,6 +26,7 @@ DEFAULT_LANGUAGE = 'Python'
 DEFAULT_ERROR_LIMIT = 200
 DEFAULT_VALIDATE = True
 DEFAULT_STRICT_UNITS = False
+DEFAULT_WITH_WIP = False
 
 # List the supported languages. This is done globally because it's used by the GUI wrapper too
 supportedLanguages = ["C", "CS", "JavaScript", "Python", "WLua", "ObjC", "Swift", "Java", "C++11"]
@@ -134,6 +135,20 @@ def mavgen(opts, args):
 
     if mavparse.check_duplicates(xml):
         sys.exit(1)
+
+    if not opts.with_wip:
+        # Strip out the wip topics
+        for x in xml:
+            msgs=x.message
+            for message in msgs:
+                if message.wip:
+                    msgs.remove(message)
+            enums = x.enum
+            for enum in enums:
+                for enumvalue in enum.entry:
+                    if enumvalue.wip:
+                        enum.entry.remove(enumvalue)
+
 
     print("Found %u MAVLink message types in %u XML files" % (
         mavparse.total_msgs(xml), len(xml)))
